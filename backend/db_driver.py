@@ -31,7 +31,7 @@ class DBDriver:
             conn.close()
 
     def init_db(self):
-        """Create interactions table if it doesn’t exist."""
+        """Create interactions table if it doesn't exist."""
         with self.get_connection() as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS interactions (
@@ -82,9 +82,25 @@ class DBDriver:
             rows = cursor.fetchall()
             return [Interaction(id=r[0], page=r[1], user_input=r[2], ai_output=r[3], timestamp=r[4]) for r in rows]
 
+    def print_all_interactions(self):
+        """Print all interactions in a readable format"""
+        interactions = self.get_history()
+        if not interactions:
+            print("No interactions found in database.")
+            return
+
+        print("\n=== ALL INTERACTIONS ===")
+        for interaction in interactions:
+            print(f"""
+Page: {interaction.page}
+User: {interaction.user_input}
+AI: {interaction.ai_output}
+Time: {interaction.timestamp}
+{'='*50}""")
+
 
 # Test it
 if __name__ == "__main__":
     db = DBDriver()
-    db.log_interaction("home.html", "What’s this?", "It’s the homepage!")
-    print(db.get_history())
+    db.log_interaction("home.html", "What's this?", "It's the homepage!")
+    db.print_all_interactions()
