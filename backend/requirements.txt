@@ -1,9 +1,15 @@
-livekit-agents
-livekit-plugins-openai
-livekit-plugins-silero
-python-dotenv
-livekit-api
-flask[async]
-flask
-flask-cors
-uvicorn
+# Core LiveKit dependencies
+livekit-agents==0.12.17
+livekit-plugins-openai==0.12.17
+livekit-plugins-silero==0.12.17
+livekit-api==1.4.0
+
+# Web framework and extensions
+flask[async]==3.0.2
+flask-cors==4.0.0
+
+# Server
+uvicorn==0.27.1
+
+# Utilities
+python-dotenv==1.0.1
