@@ -31,15 +31,55 @@ A backend service for an AI voice assistant that can understand context and reme
 
 ## Running the Application
 
-Development mode:
+### Running the AI Voice Agent
+
+Start the AI voice agent to join LiveKit rooms and interact with users:
+
 ```bash
 python agent.py dev
 ```
 
-Production mode:
+### Running the Token Server
+
+Start the token server to generate authentication tokens for frontend clients:
+
 ```bash
-python agent.py start
+python token_server.py
 ```
+
+The token server runs on port 8001 by default and provides the following endpoints:
+- `POST /api/get-token`: Generate a LiveKit token (requires `room` and `username` in the request body)
+- `GET /api/health`: Health check endpoint
+
+## Frontend Integration
+
+To connect your frontend to the LiveKit room with the AI agent:
+
+1. Install the LiveKit client in your frontend project:
+   ```bash
+   npm install livekit-client
+   ```
+
+2. Request a token from the token server:
+   ```javascript
+   const response = await fetch('http://localhost:8001/api/get-token', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ room: 'room-name', username: 'user-name' })
+   });
+   const { token } = await response.json();
+   ```
+
+3. Connect to the LiveKit room:
+   ```javascript
+   import { Room } from 'livekit-client';
+
+   const room = new Room();
+   await room.connect('your_livekit_url', token);
+   await room.localParticipant.setMicrophoneEnabled(true);
+   ```
+
+4. The AI agent will automatically respond to audio in the room.
 
 ## Project Structure
 
@@ -48,10 +88,7 @@ python agent.py start
 - `db_driver.py`: Database operations for conversation history
 - `prompts.py`: System prompts and instructions
 - `context_text.py`: Context management
-
-## API Endpoints
-
-- Coming soon...
+- `token_server.py`: Server for generating LiveKit tokens for frontend clients
 
 ## Dependencies
 
@@ -60,6 +97,14 @@ python agent.py start
 - Flask: Web framework
 - SQLite: Local database
 - Additional utilities in requirements.txt
+
+## Troubleshooting
+
+If the AI agent is not joining the room:
+1. Ensure the agent.py process is running
+2. Check that the LIVEKIT_URL, LIVEKIT_API_KEY, and LIVEKIT_API_SECRET in .env are correct
+3. Verify that the room name in your frontend matches the room the agent is configured to join
+4. Check the console logs for any connection errors
 
 ## Notes
 
